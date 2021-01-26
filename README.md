@@ -8,6 +8,10 @@ A simple Car racing game in Python using pygame.
 
 ## General info
 This project is simple Car racing game.
+###Game Intro
+![Game Intro](/images/intro.jpg)
+###Main Game
+![Main Game](/images/main.jpg)
 	
 ## Technologies
 Project is created with:
