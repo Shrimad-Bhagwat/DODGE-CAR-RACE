@@ -28,3 +28,5 @@ For installing pygame:
 pip install pygame 
 ```
 
+If you do not want to install Python, you can run the game directly using the application(.exe).
+*The application file should be in the main folder and should not be moved anywhere else for proper functioning.
