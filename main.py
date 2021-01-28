@@ -14,6 +14,11 @@ DARK_GREEN = (0,100,0)
 RED = (255,0,0)
 GREY = (169,169,169)
 DARK_GREY = (71,71,71)
+# light shade of the button 
+color_light = (180,180,180) 
+
+# dark shade of the button 
+color_dark = (100,100,100)
 
 # open a new window
 size = W,H=500,700
@@ -22,10 +27,12 @@ pygame.display.set_caption('Car Racing')  #Caption for the Game
 icon = pygame.image.load('images/icon.png') # Game Icon 
 pygame.display.set_icon(icon)
 
-#background music
-mixer.music.load('sounds/bg-music.wav')
-mixer.music.play(-1) # -1 to play continuously
-    
+# stores the width of the screen into a variable 
+width = screen.get_width() 
+
+# stores the height of the screen into a variable 
+height = screen.get_height() 
+
 # Creating List of all the sprites we will use
 all_sprites_list = pygame.sprite.Group()
 cars = ['images/car.png','images/enemy.png','images/enemy1.png','images/enemy2.png'] #List of all cars
@@ -78,15 +85,17 @@ def game_over():
     '''Game Over!'''
     mixer.music.stop()
     #Game Over Window 
-    while True:
+    
+    game_over_loop = True
+    while game_over_loop:
         # Display the background
         screen.fill(GREY)
         #Game Over Message
         font = pygame.font.Font('freesansbold.ttf',50)
         status = font.render("Game Over",True,(255,0,0))
         crash = font.render("CAR CRASHED",True,(255,0,0))
-        screen.blit(crash,(62,250))
-        screen.blit(status,(110,320))
+        screen.blit(crash,(62,200))
+        screen.blit(status,(110,270))
         score()
         pygame.display.flip() 
         
@@ -134,9 +143,51 @@ def off_road():
     font = pygame.font.Font('freesansbold.ttf',30)
     score = font.render("Car going Off Road!",True,RED)
     screen.blit(score,(100,50))
+def game_buttons(button_text):
+    smallfont = pygame.font.SysFont('calibri',35) # button font
+    quit_text = smallfont.render('Quit' , True , WHITE) # quit button text
+    start_text = smallfont.render(button_text , True , WHITE) # start button text
+
+    buttons = True
+    while buttons:
+        mouse = pygame.mouse.get_pos() # to get position of cursor
+        for event in pygame.event.get(): # User did something
+            if event.type == pygame.QUIT: # If user clicked close
+                buttons = False # Terminate the loop
+                pygame.quit()
+            
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # quit button conditions
+                if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40: 
+                    pygame.quit()
+                # start button conditions
+                elif width/2-140 <= mouse[0] <= width/2 and height/2 <= mouse[1] <= height/2+40:
+                    buttons = False
+            else:
+                pass
+        try:
+            # Quit button hover 
+            if width/2 <= mouse[0] <= width/2+140 and height/2 <= mouse[1] <= height/2+40: 
+                pygame.draw.rect(screen,color_light,[width/2,height/2,140,40]) 
+            else: 
+                pygame.draw.rect(screen,color_dark,[width/2,height/2,140,40])
+            screen.blit(quit_text , (width/2+35,height/2+5))
+
+            # Start butto hover
+            if width/2-140 <= mouse[0] <= width/2 and height/2 <= mouse[1] <= height/2+40:
+                pygame.draw.rect(screen,color_light,[(width/2)-160,(height/2),155,40]) 
+            else: 
+                pygame.draw.rect(screen,color_dark,[(width/2)-160,(height/2),155,40])
+            screen.blit(start_text , (width/2-150,height/2+5))
+
+            pygame.display.update() # Updates the Screen
+        except:
+            print("Something went Wrong")
 
 def game_intro():
     ''' Game Starts here. This is the Landing Page of the Game.'''
+    
+  
     intro = True
     while intro:
         # Display the background
@@ -146,26 +197,16 @@ def game_intro():
         font = pygame.font.Font('freesansbold.ttf',40) # Intro Page Text
         start = font.render("Dodge Car Racing",True,RED)
         screen.blit(start,(72,300))
-        # Message Display to start the Game by pressing SPACE
-        space_font = pygame.font.Font('freesansbold.ttf',25)
-        start_button = space_font.render("Press SPACE to Start",True,BLACK)
-        screen.blit(start_button,(110,400))
 
         # Event Controller
         for event in pygame.event.get(): # User did something
             if event.type == pygame.QUIT: # If user clicked close
                 intro = False # Terminate the loop
                 pygame.quit()
-            elif event.type == pygame.KEYDOWN: # If user presses any key
-                if event.key == pygame.K_SPACE: # If space is pressed.
-                    intro = False
-            else:
-                pass
-        try:
-            pygame.display.update() # Updates the Screen
-        except:
-            print("Something went Wrong")    
-
+        game_buttons('Start')
+        intro = False
+        carryOn = True
+        
 def create_bush():
     ''' Creates Roadside bushes'''
     global bush
@@ -184,6 +225,7 @@ def create_bush():
 
 def game_loop():
     '''Main Game loop''' 
+    
     global score_value,bush
     FPS = 120 # Frame rate at which The game will Play
     score_value = 0 # the score value
@@ -192,17 +234,19 @@ def game_loop():
     # Creating Enemies and Bushes 
     create_enemy()
     create_bush()
-
+    
     #Game Begins
     game_intro()
-    
+    #background music
+    mixer.music.load('sounds/bg-music.wav')
+    mixer.music.play(-1) # -1 to play continuously
 
     # -------- Main Program Loop -----------
     carryOn = True
-
     while carryOn:
+        
         try:
-            # Event Handler
+        # Event Handler
             for event in pygame.event.get(): 
                 if event.type == pygame.QUIT: 
                     carryOn = False
@@ -230,7 +274,6 @@ def game_loop():
             # Crash Sound after Collision
             crash_sound = mixer.Sound('sounds/crash.wav')
             crash_sound.play()
-
             carryOn = False # After collision Main game loop terminates
             game_over() # Then display the Game over screen
         
@@ -285,7 +328,7 @@ def game_loop():
         
         # Frames 
         clock.tick(FPS)
-    
+
 if __name__ == '__main__':
     game_loop()
     add_high_score()
