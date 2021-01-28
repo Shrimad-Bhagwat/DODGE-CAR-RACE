@@ -10,7 +10,7 @@ A simple Car racing game in Python using pygame.
 This project is simple Car racing game.
 
 ### Game Intro
- ![Game Intro](/images/intro.JPG)
+ ![Game Intro](/images/menu.JPG)
 
 ### Main Game
  ![Main Game](/images/main.JPG)
